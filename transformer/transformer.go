@@ -9,6 +9,7 @@ import (
 	"reflect"
 )
 
+// Format represents the wire format to use for serialization and deserialization.
 type Format string
 
 const (
