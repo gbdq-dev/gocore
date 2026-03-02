@@ -9,7 +9,7 @@ type UUIDGenerator func() uuid.UUID
 
 // UUID returns a UUID generator.
 func UUID() UUIDGenerator {
-	return RealUUIDGenerator()
+	return Generator()
 }
 
 // Next returns the next unique identifier.
@@ -22,7 +22,7 @@ func (g UUIDGenerator) Next() uuid.UUID {
 }
 
 // RealUUIDGenerator returns a generator that produces new UUIDs via uuid.New.
-func RealUUIDGenerator() UUIDGenerator {
+func Generator() UUIDGenerator {
 	return func() uuid.UUID {
 		return uuid.New()
 	}
