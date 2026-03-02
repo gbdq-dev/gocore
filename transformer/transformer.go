@@ -1,3 +1,5 @@
+// Package transformer provides helpers to serialize and deserialize values
+// using supported wire formats.
 package transformer
 
 import (
@@ -7,13 +9,20 @@ import (
 	"reflect"
 )
 
+// Format represents the wire format to use for serialization and deserialization.
 type Format string
 
 const (
+	// JSON encodes and decodes data using encoding/json.
 	JSON Format = "json"
-	XML  Format = "xml"
+	// XML encodes and decodes data using encoding/xml.
+	XML Format = "xml"
 )
 
+// Transform serializes data into the requested format.
+//
+// Supported formats are JSON and XML. It returns an error when format is not
+// supported.
 func Transform(data any, format Format) ([]byte, error) {
 	switch format {
 	case JSON:
@@ -25,6 +34,10 @@ func Transform(data any, format Format) ([]byte, error) {
 	}
 }
 
+// Parse deserializes data in the requested format into target.
+//
+// Target must be a non-nil pointer to the destination value. Supported formats
+// are JSON and XML. It returns an error when format is not supported.
 func Parse(data []byte, format Format, target any) error {
 	if target == nil {
 		return errors.New("target cannot be nil")
