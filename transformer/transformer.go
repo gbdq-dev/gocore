@@ -6,7 +6,15 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"errors"
+	"fmt"
 	"reflect"
+)
+
+var (
+	ErrUnsupportedFormat = errors.New("unsupported format")
+	ErrTargetNil         = errors.New("target cannot be nil")
+	ErrTargetNotPointer  = errors.New("target must be a pointer")
+	ErrTargetPointerNil  = errors.New("target pointer cannot be nil")
 )
 
 // Format represents the wire format to use for serialization and deserialization.
@@ -30,7 +38,7 @@ func Transform(data any, format Format) ([]byte, error) {
 	case XML:
 		return xml.Marshal(data)
 	default:
-		return nil, errors.New("unsupported format: " + string(format))
+		return nil, fmt.Errorf("%w: %s", ErrUnsupportedFormat, format)
 	}
 }
 
@@ -40,16 +48,16 @@ func Transform(data any, format Format) ([]byte, error) {
 // are JSON and XML. It returns an error when format is not supported.
 func Parse(data []byte, format Format, target any) error {
 	if target == nil {
-		return errors.New("target cannot be nil")
+		return ErrTargetNil
 	}
 
 	rv := reflect.ValueOf(target)
 	if rv.Kind() != reflect.Ptr {
-		return errors.New("target must be a pointer")
+		return ErrTargetNotPointer
 	}
 
 	if rv.IsNil() {
-		return errors.New("target pointer cannot be nil")
+		return ErrTargetPointerNil
 	}
 
 	switch format {
@@ -58,6 +66,6 @@ func Parse(data []byte, format Format, target any) error {
 	case XML:
 		return xml.Unmarshal(data, target)
 	default:
-		return errors.New("unsupported format: " + string(format))
+		return fmt.Errorf("%w: %s", ErrUnsupportedFormat, format)
 	}
 }
